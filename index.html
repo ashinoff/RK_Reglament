@@ -3,25 +3,26 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Поиск по Регламенту — Глава 4</title>
+  <title>РЕГЛАМЕНТ РАБОТЫ ПАО «РОССЕТИ КУБАНЬ» ПО ВЫЯВЛЕНИЮ, СОКРАЩЕНИЮ И ИСКЛЮЧЕНИЮ БЕЗДОГОВОРНОГО И БЕЗУЧЕТНОГО ПОТРЕБЛЕНИЯ ЭЛЕКТРОЭНЕРГИИ</title>
   <meta name="description" content="Быстрый поиск по Главе 4 Регламента: краткие выжимки + разворот полного текста по пункту." />
   <style>
     :root{
-      --bg: #0b1020;
-      --panel: #12182b;
-      --muted: #94a3b8;
-      --text: #e2e8f0;
-      --accent: #6ee7b7;
-      --accent-2: #60a5fa;
-      --danger: #f87171;
-      --card: #0f1527;
-      --ring: rgba(110,231,183,.35);
+      --bg: #0b2a5b;      /* navy */
+      --panel: #f2f5fb;   /* light panel */
+      --muted: #475569;   /* slate-600 */
+      --text: #0b0f17;    /* near-black */
+      --accent: #1e40af;  /* blue-800 */
+      --accent-2: #2563eb;/* blue-600 */
+      --danger: #dc2626;  /* red-600 */
+      --card: #ffffff;    /* white cards */
+      --ring: rgba(37,99,235,.25);
+      --mark: #fff59d;    /* highlight */
     }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{margin:0;font-family:Inter,Segoe UI,system-ui,-apple-system,Roboto,Arial,sans-serif;background:linear-gradient(180deg,var(--bg),#0b1226 40%,#0a0f1f);color:var(--text)}
+    body{margin:0;font-family:Inter,Segoe UI,system-ui,-apple-system,Roboto,Arial,sans-serif;background:#ffffff;color:var(--text)}
     .container{max-width:1100px;margin:0 auto;padding:clamp(16px,2vw,32px)}
-    header{position:sticky;top:0;background:linear-gradient(180deg,rgba(11,16,32,.9),rgba(11,16,32,.7));backdrop-filter:blur(10px);z-index:10}
+    header{position:sticky;top:0;background:var(--bg);color:#fff;backdrop-filter:blur(10px);z-index:10}
     .brand{display:flex;align-items:center;gap:10px}
     .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 10px 30px rgba(96,165,250,.35)}
     h1{font-size:clamp(18px,2.4vw,24px);margin:0}
@@ -43,37 +44,48 @@
     .results-head{display:flex;align-items:center;justify-content:space-between;margin:8px 0 12px;color:var(--muted);font-size:14px}
 
     .list{display:grid;gap:12px}
-    .card{background:linear-gradient(180deg,var(--card),#0a0f1f);border:1px solid #1b2441;border-radius:16px;overflow:hidden}
-    .card-h{display:flex;gap:12px;align-items:baseline;padding:14px 16px}
-    .badge{background:rgba(110,231,183,.1);color:#a7f3d0;border:1px solid rgba(110,231,183,.35);padding:4px 8px;border-radius:999px;font-weight:600;font-size:12px}
+    .card{background:var(--card);border:1px solid #e2e8f0;border-radius:16px;overflow:hidden}
+    .card-h{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer}
+    .badge{background:#1d4ed8;color:#fff;border:0;padding:6px 10px;border-radius:999px;font-weight:700;font-size:12px}
     .title{font-weight:700}
-    .summary{color:#cbd5e1}
-    .meta{color:#94a3b8;font-size:12px}
+    .summary{color:#1f2937}
+    .meta{color:#475569;font-size:12px}
 
-    .card-c{padding:0 16px 12px 16px;display:none}
+    .card-c{padding:8px 16px 16px 16px;display:none}
     .card.open .card-c{display:block}
     .btn-row{display:flex;gap:8px;align-items:center;margin:0 16px 14px}
-    .btn{appearance:none;border:1px solid #1b2441;background:#0c1428;color:#dbe6ff;border-radius:12px;padding:10px 12px;font-size:14px;cursor:pointer}
+    .btn{appearance:none;border:1px solid #e2e8f0;background:#eff6ff;color:#0b0f17;border-radius:12px;padding:10px 12px;font-size:14px;cursor:pointer}
     .btn:hover{border-color:var(--accent)}
-    .btn.primary{background:linear-gradient(180deg,#0d1b31,#0f1730);border:1px solid #22325d}
+    .btn.primary{background:#2563eb;border:1px solid #1d4ed8;color:#fff}
 
-    details{border:1px dashed #203056;border-radius:12px;padding:12px;margin-top:10px}
-    details>summary{cursor:pointer;color:#c3d5ff}
-    .fulltext{line-height:1.6;color:#e2e8f0}
+    details, details>summary{display:none}
+    .fulltext{line-height:1.6;color:#0b0f17}.fulltext h3{margin:10px 0 6px}.fulltext p{margin:0 0 10px}
     .fulltext h3{margin:10px 0 6px}
     .fulltext p{margin:0 0 10px}
 
-    .nores{padding:24px;text-align:center;color:#9fb0cc;border:1px dashed #22325d;border-radius:16px}
+    .nores{padding:24px;text-align:center;color:#475569;border:1px dashed #e2e8f0;border-radius:16px}
 
     footer{margin:26px 0;color:var(--muted);font-size:12px}
-    a{color:#a5e7ff}
+    a{color:#1d4ed8}
+
+    mark{background:var(--mark);padding:0 .15em;border-radius:.2em}
+
+    .dock{position:fixed;bottom:16px;right:16px;display:flex;gap:8px;background:#ffffffee;border:1px solid #e2e8f0;padding:8px;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.12);backdrop-filter:saturate(140%) blur(6px)}
+    .dock-btn{appearance:none;background:#f1f5f9;border:1px solid #cbd5e1;color:#0b0f17;border-radius:10px;padding:8px 10px;font-size:13px;cursor:pointer}
+    .dock-btn:hover{border-color:#1d4ed8;color:#1d4ed8;background:#eff6ff}
 
     @media (min-width: 900px){
       .card-h{align-items:center}
       .title{font-size:16px}
     }
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .left{display:grid;gap:6px}
+    .actions{display:flex;gap:6px;align-items:center}
+    .icon{appearance:none;background:transparent;border:1px solid #cbd5e1;color:#0b0f17;border-radius:8px;padding:6px 8px;font-size:14px;line-height:1;cursor:pointer}
+    .icon:hover{border-color:#1d4ed8;color:#1d4ed8}
+    .chevron{user-select:none;transition:transform .15s ease}
+    .card.open .chevron{transform:rotate(180deg)}
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
 </head>
 <body>
   <header>
@@ -81,7 +93,7 @@
       <div class="brand">
         <div class="logo" aria-hidden="true"></div>
         <div>
-          <h1>Поиск по Главе 4 Регламента</h1>
+          <h1>РЕГЛАМЕНТ РАБОТЫ ПАО «РОССЕТИ КУБАНЬ» ПО ВЫЯВЛЕНИЮ, СОКРАЩЕНИЮ И ИСКЛЮЧЕНИЮ БЕЗДОГОВОРНОГО И БЕЗУЧЕТНОГО ПОТРЕБЛЕНИЯ ЭЛЕКТРОЭНЕРГИИ</h1>
           <div class="sub">Краткая выжимка → разворот полного текста нужного пункта</div>
         </div>
       </div>
@@ -99,9 +111,14 @@
     <div id="empty" class="nores" style="display:none">Ничего не найдено. Попробуйте: <em>безучёт</em>, <em>бездоговорное</em>, <em>акт</em>, <em>комиссия</em>, <em>ФССП</em>.</div>
 
     <footer>
-      <div>Разворачивает полный текст из Word-файла regulment.docx (в корне репозитория). Если файла нет — подхватывает фрагменты из regulation.json.</div>
+      <div>Поддерживает разворот полного текста из внешнего файла <code>regulation.json</code> (см. комментарии в коде).</div>
       <div>Сделано с любовью к лаконичным шпаргалкам ❤</div>
     </footer>
+    <div class="dock" aria-label="Панель управления">
+      <button class="dock-btn" data-dock="open-all">Развернуть всё</button>
+      <button class="dock-btn" data-dock="close-all">Свернуть всё</button>
+      <button class="dock-btn" data-dock="to-top">Наверх</button>
+    </div>
   </main>
 
   <script>
@@ -315,42 +332,41 @@
       card.className = 'card';
       card.setAttribute('data-id', s.id);
       card.innerHTML = `
-        <div class="card-h">
-          <span class="badge" title="Номер пункта">§ ${s.id}</span>
-          <div>
-            <div class="title">${escapeHTML(s.title)}</div>
+        <div class="card-h" data-action="toggle">
+          <div class="left">
+            <div class="row">
+              <span class="badge" title="Номер пункта">§ ${s.id}</span>
+              <span class="title">${escapeHTML(s.title)}</span>
+            </div>
             <div class="summary">${highlight(s.summary, q)}</div>
             <div class="meta">Ключевые слова: ${(s.keywords||[]).slice(0,6).join(', ')}</div>
           </div>
-        </div>
-        <div class="btn-row">
-          <button class="btn primary" data-action="toggle">Развернуть полный текст пункта</button>
-          <button class="btn" data-action="copy-link" title="Скопировать ссылку на пункт">Скопировать ссылку</button>
+          <div class="actions">
+            <button class="icon" data-action="copy-link" title="Скопировать ссылку на пункт">🔗</button>
+            <span class="icon chevron" aria-hidden="true">▾</span>
+          </div>
         </div>
         <div class="card-c">
-          <details open>
-            <summary>Полный текст</summary>
-            <div class="fulltext" id="full-${s.id}"><em>Загрузка…</em></div>
-          </details>
+          <div class="fulltext" id="full-${s.id}"><em>Нажмите на пункт, чтобы загрузить полный текст…</em></div>
         </div>`;
 
       card.addEventListener('click', async (e)=>{
-        const btn = e.target.closest('button');
-        if(!btn) return;
-        const action = btn.getAttribute('data-action');
-        if(action==='toggle'){
-          card.classList.toggle('open');
-          if(card.classList.contains('open')){
-            await ensureFullTextLoaded(s.id);
-          }
-        }
-        if(action==='copy-link'){
+        const linkBtn = e.target.closest('button[data-action="copy-link"]');
+        if(linkBtn){
+          e.stopPropagation();
           const url = new URL(location.href);
           url.hash = s.id;
           navigator.clipboard.writeText(url.toString()).then(()=>{
-            btn.textContent = 'Ссылка скопирована';
-            setTimeout(()=>btn.textContent='Скопировать ссылку',1500);
+            linkBtn.textContent = '✓';
+            setTimeout(()=>linkBtn.textContent='🔗',1200);
           });
+          return;
+        }
+        if(e.target.closest('.card-h')){
+          card.classList.toggle('open');
+          if(card.classList.contains('open')){ await ensureFullTextLoaded(s.id); }
+        }
+      });
         }
       });
 
@@ -362,8 +378,8 @@
     if(hash){
       const target = $(`.card[data-id="${CSS.escape(hash)}"]`);
       if(target){
-        const btn = target.querySelector('button[data-action="toggle"]');
-        btn?.click();
+        target.classList.add('open');
+        ensureFullTextLoaded(hash);
         target.scrollIntoView({behavior:'smooth', block:'start'});
       }
     }
@@ -433,7 +449,29 @@
   });
 
   // ===== поиск
-  const doSearch = debounce(()=>{ render(input.value); persistQuery(); }, 150);
+  const doSearch = debounce(()=>{ render(input.value);
+
+  // Панель управления (док-бар)
+  function getCards(){ return Array.from(document.querySelectorAll('.card')); }
+  async function openAll(){
+    const list = getCards();
+    for(const c of list){
+      c.classList.add('open');
+      const id = c.getAttribute('data-id');
+      if(id) await ensureFullTextLoaded(id);
+    }
+  }
+  function closeAll(){
+    const list = getCards();
+    for(const c of list){ c.classList.remove('open'); }
+  }
+  document.addEventListener('click', async (e)=>{
+    const b = e.target.closest('.dock-btn'); if(!b) return;
+    const act = b.getAttribute('data-dock');
+    if(act==='open-all'){ await openAll(); }
+    if(act==='close-all'){ closeAll(); }
+    if(act==='to-top'){ window.scrollTo({top:0,behavior:'smooth'}); }
+  }); persistQuery(); }, 150);
   input.addEventListener('input', doSearch);
 
   // горячая клавиша Ctrl+/
@@ -460,89 +498,5 @@
   render(input.value);
 
   </script>
-  <script>
-// Чтение регламента из Word (reglament.docx) и подстановка нужного пункта 4.x
-(function(){
-  if(!window.mammoth){ return; } // если CDN не подгрузился
-
-  let DOCX_MAP = null; // {"4.15.2": "<h3>..</h3>..."}
-  let DOCX_ERROR = null;
-
-  async function loadDocxAndIndex(){
-    if (DOCX_MAP!==null || DOCX_ERROR) return DOCX_MAP;
-    try{
-      const res = await fetch('reglament.docx');
-      if(!res.ok) throw new Error('HTTP '+res.status);
-      const buf = await res.arrayBuffer();
-      const out = await mammoth.convertToHtml({ arrayBuffer: buf });
-      const html = (out && out.value) || '';
-
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, 'text/html');
-
-      // Линейный список узлов тела
-      const bodyNodes = Array.from(doc.body.childNodes);
-
-      // Заголовки/абзацы, начинающиеся с 4, 4.1, 4.6.2, 4.15.4 и т.п.
-      const heads = Array.from(doc.querySelectorAll('h1,h2,h3,h4,h5,h6,p'))
-        .map(el => {
-          const t = (el.textContent || '').trim().replace(/\s+/g,' ');
-          const m = t.match(/^4(?:\.\d+){0,5}/);
-          if(!m) return null;
-          const id = m[0];
-          const level = id.split('.').length - 1; // 4->0; 4.1->1; 4.1.2->2
-          const idx = bodyNodes.indexOf(el);
-          return { el, id, level, idx };
-        })
-        .filter(Boolean)
-        .filter(h => /^4(\.|$)/.test(h.id));
-
-      // Собираем фрагменты: от текущего заголовка до следующего того же/высшего уровня
-      const map = {};
-      for(let i=0;i<heads.length;i++){
-        const cur = heads[i];
-        let stop = bodyNodes.length;
-        for(let j=i+1;j<heads.length;j++){
-          if(heads[j].idx > cur.idx && heads[j].level <= cur.level){
-            stop = heads[j].idx; break;
-          }
-        }
-        const frag = [];
-        for(let n = cur.el; n && bodyNodes.indexOf(n) < stop; n = n.nextSibling){
-          frag.push(n.outerHTML || n.textContent || '');
-        }
-        map[cur.id] = frag.join('');
-      }
-
-      DOCX_MAP = map;
-      return DOCX_MAP;
-    }catch(e){
-      DOCX_ERROR = e;
-      DOCX_MAP = {};
-      return DOCX_MAP;
-    }
-  }
-
-  // Подменяем ensureFullTextLoaded: сперва пробуем Word, затем — штатные источники
-  const origEnsure = window.ensureFullTextLoaded;
-  window.ensureFullTextLoaded = async function(id){
-    const slot = document.getElementById('full-'+id);
-    if(slot && slot.getAttribute('data-loaded')==='1') return;
-
-    try{
-      const dmap = await loadDocxAndIndex();
-      if(dmap && dmap[id] && slot){
-        slot.innerHTML = dmap[id];
-        slot.setAttribute('data-loaded','1');
-        return;
-      }
-    }catch(e){/* тихо отступаем к запасным источникам */ }
-
-    if(typeof origEnsure === 'function'){
-      return origEnsure(id);
-    }
-  };
-})();
-</script>
 </body>
 </html>
