@@ -99,7 +99,7 @@
     <div id="empty" class="nores" style="display:none">Ничего не найдено. Попробуйте: <em>безучёт</em>, <em>бездоговорное</em>, <em>акт</em>, <em>комиссия</em>, <em>ФССП</em>.</div>
 
     <footer>
-      <div>Поддерживает разворот полного текста из внешнего файла <code>regulation.json</code> (см. комментарии в коде).</div>
+      <div>Разворачивает полный текст из Word-файла regulment.docx (в корне репозитория). Если файла нет — подхватывает фрагменты из regulation.json.</div>
       <div>Сделано с любовью к лаконичным шпаргалкам ❤</div>
     </footer>
   </main>
@@ -460,5 +460,89 @@
   render(input.value);
 
   </script>
+  <script>
+// Чтение регламента из Word (reglament.docx) и подстановка нужного пункта 4.x
+(function(){
+  if(!window.mammoth){ return; } // если CDN не подгрузился
+
+  let DOCX_MAP = null; // {"4.15.2": "<h3>..</h3>..."}
+  let DOCX_ERROR = null;
+
+  async function loadDocxAndIndex(){
+    if (DOCX_MAP!==null || DOCX_ERROR) return DOCX_MAP;
+    try{
+      const res = await fetch('reglament.docx');
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const buf = await res.arrayBuffer();
+      const out = await mammoth.convertToHtml({ arrayBuffer: buf });
+      const html = (out && out.value) || '';
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      // Линейный список узлов тела
+      const bodyNodes = Array.from(doc.body.childNodes);
+
+      // Заголовки/абзацы, начинающиеся с 4, 4.1, 4.6.2, 4.15.4 и т.п.
+      const heads = Array.from(doc.querySelectorAll('h1,h2,h3,h4,h5,h6,p'))
+        .map(el => {
+          const t = (el.textContent || '').trim().replace(/\s+/g,' ');
+          const m = t.match(/^4(?:\.\d+){0,5}/);
+          if(!m) return null;
+          const id = m[0];
+          const level = id.split('.').length - 1; // 4->0; 4.1->1; 4.1.2->2
+          const idx = bodyNodes.indexOf(el);
+          return { el, id, level, idx };
+        })
+        .filter(Boolean)
+        .filter(h => /^4(\.|$)/.test(h.id));
+
+      // Собираем фрагменты: от текущего заголовка до следующего того же/высшего уровня
+      const map = {};
+      for(let i=0;i<heads.length;i++){
+        const cur = heads[i];
+        let stop = bodyNodes.length;
+        for(let j=i+1;j<heads.length;j++){
+          if(heads[j].idx > cur.idx && heads[j].level <= cur.level){
+            stop = heads[j].idx; break;
+          }
+        }
+        const frag = [];
+        for(let n = cur.el; n && bodyNodes.indexOf(n) < stop; n = n.nextSibling){
+          frag.push(n.outerHTML || n.textContent || '');
+        }
+        map[cur.id] = frag.join('');
+      }
+
+      DOCX_MAP = map;
+      return DOCX_MAP;
+    }catch(e){
+      DOCX_ERROR = e;
+      DOCX_MAP = {};
+      return DOCX_MAP;
+    }
+  }
+
+  // Подменяем ensureFullTextLoaded: сперва пробуем Word, затем — штатные источники
+  const origEnsure = window.ensureFullTextLoaded;
+  window.ensureFullTextLoaded = async function(id){
+    const slot = document.getElementById('full-'+id);
+    if(slot && slot.getAttribute('data-loaded')==='1') return;
+
+    try{
+      const dmap = await loadDocxAndIndex();
+      if(dmap && dmap[id] && slot){
+        slot.innerHTML = dmap[id];
+        slot.setAttribute('data-loaded','1');
+        return;
+      }
+    }catch(e){/* тихо отступаем к запасным источникам */ }
+
+    if(typeof origEnsure === 'function'){
+      return origEnsure(id);
+    }
+  };
+})();
+</script>
 </body>
 </html>
