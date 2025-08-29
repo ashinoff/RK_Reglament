@@ -35,11 +35,11 @@
       transition:border .15s, box-shadow .15s;
     }
     .search input:focus{border-color:var(--accent); box-shadow:0 0 0 4px var(--ring)}
-    .kbd{background:#0c1428;border:1px solid #1f2a44;border-bottom-width:2px;color:#aab4cf;padding:3px 8px;border-radius:8px;font-size:12px}
+    .kbd{background:#f1f5f9;border:1px solid #cbd5e1;border-bottom-width:2px;color:#334155;padding:3px 8px;border-radius:8px;font-size:12px}
 
     .tips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 18px}
-    .tip{cursor:pointer;user-select:none;border:1px solid #1b2341;color:#c4cee6;background:#0a1227;padding:6px 10px;border-radius:999px;font-size:12px}
-    .tip:hover{border-color:var(--accent);color:#e6fff6}
+    .tip{cursor:pointer;user-select:none;border:1px solid #cbd5e1;color:#0b0f17;background:#f8fafc;padding:6px 10px;border-radius:999px;font-size:12px}
+    .tip:hover{border-color:var(--accent);color:#0b0f17;background:#eff6ff}
 
     .results-head{display:flex;align-items:center;justify-content:space-between;margin:8px 0 12px;color:var(--muted);font-size:14px}
 
@@ -86,6 +86,7 @@
     .chevron{user-select:none;transition:transform .15s ease}
     .card.open .chevron{transform:rotate(180deg)}
   </style>
+<script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
 </head>
 <body>
   <header>
@@ -111,7 +112,7 @@
     <div id="empty" class="nores" style="display:none">Ничего не найдено. Попробуйте: <em>безучёт</em>, <em>бездоговорное</em>, <em>акт</em>, <em>комиссия</em>, <em>ФССП</em>.</div>
 
     <footer>
-      <div>Поддерживает разворот полного текста из внешнего файла <code>regulation.json</code> (см. комментарии в коде).</div>
+      <div>Разворачивает полный текст из Word-файла <code>reglament.docx</code> (предпочтительно) или из <code>regulation.json</code> (резерв).</div>
       <div>Сделано с любовью к лаконичным шпаргалкам ❤</div>
     </footer>
     <div class="dock" aria-label="Панель управления">
@@ -496,5 +497,101 @@
   render(input.value);
 
   </script>
+<script>
+// Чтение regulamant.docx и подстановка полного текста нужного пункта 4.x (без регулярок)
+(function(){
+  if(!window.mammoth){ return; }
+  let DOCX_MAP = null, DOCX_ERR = null;
+
+  function normalizeId(raw){
+    // берём только цифры и разделители до первого «постороннего» символа
+    let buf = '';
+    for(let i=0;i<raw.length;i++){
+      const ch = raw[i];
+      if((ch>='0'&&ch<='9')||ch==='.'||ch===')'||ch===' '||ch==='-'){ buf+=ch; } else { break; }
+    }
+    // все разделители → точка
+    let s='';
+    for(let i=0;i<buf.length;i++){
+      const ch = buf[i];
+      if(ch>='0'&&ch<='9') s+=ch; else s+='.';
+    }
+    // схлопнуть точки и обрезать
+    const parts = s.split('.').filter(Boolean);
+    return parts.join('.');
+  }
+
+  async function loadDocxAndIndex(){
+    if(DOCX_MAP!==null || DOCX_ERR) return DOCX_MAP;
+    try{
+      const res = await fetch('reglament.docx?x=' + Date.now(), { cache: 'no-store' });
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const buf = await res.arrayBuffer();
+      const out = await mammoth.convertToHtml({ arrayBuffer: buf });
+      const html = (out && out.value) || '';
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      // соберём все элементы в порядке документа
+      const elems = [];
+      const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_ELEMENT, null);
+      for(let n=walker.nextNode(); n; n=walker.nextNode()){ elems.push(n); }
+
+      // найдём заголовки/абзацы, где строка начинается с 4...
+      const heads = [];
+      for(let i=0;i<elems.length;i++){
+        const el = elems[i];
+        const tag = (el.tagName||'').toLowerCase();
+        if(!(tag==='p' || (tag[0]==='h' && tag.length===2))) continue;
+        const t = (el.textContent||'').trim();
+        if(!t || t[0] !== '4') continue;
+        const id = normalizeId(t);
+        if(!id || id[0] !== '4') continue;
+        const level = id.split('.').length - 1;
+        heads.push({ el, idx:i, id, level });
+      }
+
+      // склеим фрагменты по уровням
+      const map = {};
+      for(let i=0;i<heads.length;i++){
+        const cur = heads[i];
+        let endEl = null;
+        for(let j=i+1;j<heads.length;j++){
+          if(heads[j].idx > cur.idx && heads[j].level <= cur.level){ endEl = heads[j].el; break; }
+        }
+        const range = doc.createRange();
+        range.setStartBefore(cur.el);
+        if(endEl) range.setEndBefore(endEl); else range.setEndAfter(doc.body.lastElementChild||doc.body.lastChild);
+        const frag = range.cloneContents();
+        const wrap = doc.createElement('div');
+        wrap.appendChild(frag);
+        map[cur.id] = wrap.innerHTML;
+      }
+
+      DOCX_MAP = map; return DOCX_MAP;
+    }catch(e){ DOCX_ERR = e; DOCX_MAP = {}; return DOCX_MAP; }
+  }
+
+  const origEnsure = window.ensureFullTextLoaded;
+  window.ensureFullTextLoaded = async function(id){
+    const slot = document.getElementById('full-'+id);
+    if(slot && slot.getAttribute('data-loaded')==='1') return;
+
+    try{
+      const dmap = await loadDocxAndIndex();
+      if(dmap && dmap[id] && slot){
+        slot.innerHTML = dmap[id];
+        slot.setAttribute('data-loaded','1');
+        return;
+      }
+    }catch(e){ /* пойдём в резерв */ }
+
+    if(typeof origEnsure === 'function'){
+      return origEnsure(id);
+    }
+  };
+})();
+</script>
 </body>
 </html>
