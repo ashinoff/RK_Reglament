@@ -367,8 +367,6 @@
           if(card.classList.contains('open')){ await ensureFullTextLoaded(s.id); }
         }
       });
-        }
-      });
 
       listEl.appendChild(card);
     }
@@ -449,7 +447,8 @@
   });
 
   // ===== поиск
-  const doSearch = debounce(()=>{ render(input.value);
+  const doSearch = debounce(()=>{ render(input.value); persistQuery(); }, 150);
+  input.addEventListener('input', doSearch);
 
   // Панель управления (док-бар)
   function getCards(){ return Array.from(document.querySelectorAll('.card')); }
@@ -471,8 +470,7 @@
     if(act==='open-all'){ await openAll(); }
     if(act==='close-all'){ closeAll(); }
     if(act==='to-top'){ window.scrollTo({top:0,behavior:'smooth'}); }
-  }); persistQuery(); }, 150);
-  input.addEventListener('input', doSearch);
+  });
 
   // горячая клавиша Ctrl+/
   window.addEventListener('keydown',(e)=>{
