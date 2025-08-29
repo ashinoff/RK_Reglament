@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Поиск по Регламенту — Глава 4</title>
+  <meta name="description" content="Быстрый поиск по Главе 4 Регламента: краткие выжимки + разворот полного текста по пункту." />
+  <style>
+    :root{
+      --bg: #0b1020;
+      --panel: #12182b;
+      --muted: #94a3b8;
+      --text: #e2e8f0;
+      --accent: #6ee7b7;
+      --accent-2: #60a5fa;
+      --danger: #f87171;
+      --card: #0f1527;
+      --ring: rgba(110,231,183,.35);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,Segoe UI,system-ui,-apple-system,Roboto,Arial,sans-serif;background:linear-gradient(180deg,var(--bg),#0b1226 40%,#0a0f1f);color:var(--text)}
+    .container{max-width:1100px;margin:0 auto;padding:clamp(16px,2vw,32px)}
+    header{position:sticky;top:0;background:linear-gradient(180deg,rgba(11,16,32,.9),rgba(11,16,32,.7));backdrop-filter:blur(10px);z-index:10}
+    .brand{display:flex;align-items:center;gap:10px}
+    .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 10px 30px rgba(96,165,250,.35)}
+    h1{font-size:clamp(18px,2.4vw,24px);margin:0}
+    .sub{color:var(--muted);font-size:14px}
+
+    .search{display:flex;gap:12px;align-items:center;margin:18px 0 10px}
+    .search input{
+      flex:1; background:var(--panel); border:1px solid transparent; color:var(--text);
+      padding:14px 16px; border-radius:14px; font-size:16px; outline:none;
+      transition:border .15s, box-shadow .15s;
+    }
+    .search input:focus{border-color:var(--accent); box-shadow:0 0 0 4px var(--ring)}
+    .kbd{background:#0c1428;border:1px solid #1f2a44;border-bottom-width:2px;color:#aab4cf;padding:3px 8px;border-radius:8px;font-size:12px}
+
+    .tips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 18px}
+    .tip{cursor:pointer;user-select:none;border:1px solid #1b2341;color:#c4cee6;background:#0a1227;padding:6px 10px;border-radius:999px;font-size:12px}
+    .tip:hover{border-color:var(--accent);color:#e6fff6}
+
+    .results-head{display:flex;align-items:center;justify-content:space-between;margin:8px 0 12px;color:var(--muted);font-size:14px}
+
+    .list{display:grid;gap:12px}
+    .card{background:linear-gradient(180deg,var(--card),#0a0f1f);border:1px solid #1b2441;border-radius:16px;overflow:hidden}
+    .card-h{display:flex;gap:12px;align-items:baseline;padding:14px 16px}
+    .badge{background:rgba(110,231,183,.1);color:#a7f3d0;border:1px solid rgba(110,231,183,.35);padding:4px 8px;border-radius:999px;font-weight:600;font-size:12px}
+    .title{font-weight:700}
+    .summary{color:#cbd5e1}
+    .meta{color:#94a3b8;font-size:12px}
+
+    .card-c{padding:0 16px 12px 16px;display:none}
+    .card.open .card-c{display:block}
+    .btn-row{display:flex;gap:8px;align-items:center;margin:0 16px 14px}
+    .btn{appearance:none;border:1px solid #1b2441;background:#0c1428;color:#dbe6ff;border-radius:12px;padding:10px 12px;font-size:14px;cursor:pointer}
+    .btn:hover{border-color:var(--accent)}
+    .btn.primary{background:linear-gradient(180deg,#0d1b31,#0f1730);border:1px solid #22325d}
+
+    details{border:1px dashed #203056;border-radius:12px;padding:12px;margin-top:10px}
+    details>summary{cursor:pointer;color:#c3d5ff}
+    .fulltext{line-height:1.6;color:#e2e8f0}
+    .fulltext h3{margin:10px 0 6px}
+    .fulltext p{margin:0 0 10px}
+
+    .nores{padding:24px;text-align:center;color:#9fb0cc;border:1px dashed #22325d;border-radius:16px}
+
+    footer{margin:26px 0;color:var(--muted);font-size:12px}
+    a{color:#a5e7ff}
+
+    @media (min-width: 900px){
+      .card-h{align-items:center}
+      .title{font-size:16px}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>Поиск по Главе 4 Регламента</h1>
+          <div class="sub">Краткая выжимка → разворот полного текста нужного пункта</div>
+        </div>
+      </div>
+      <div class="search" role="search">
+        <input id="q" type="search" placeholder="Например: досудебная претензия, ограничение, акт недопуска…" aria-label="Поиск по пунктам главы" autofocus />
+        <span class="kbd" title="Горячая клавиша">Ctrl /</span>
+      </div>
+      <div class="tips" id="tips"></div>
+      <div class="results-head"><span id="count">Найдено: 0</span><span>Глава 4 · мобильная/desktop-версия</span></div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="list" class="list" aria-live="polite"></section>
+    <div id="empty" class="nores" style="display:none">Ничего не найдено. Попробуйте: <em>безучёт</em>, <em>бездоговорное</em>, <em>акт</em>, <em>комиссия</em>, <em>ФССП</em>.</div>
+
+    <footer>
+      <div>Поддерживает разворот полного текста из внешнего файла <code>regulation.json</code> (см. комментарии в коде).</div>
+      <div>Сделано с любовью к лаконичным шпаргалкам ❤</div>
+    </footer>
+  </main>
+
+  <script>
+  // ===========================
+  // ДАННЫЕ: краткие карточки по Главе 4
+  // Поле fullText можно оставить пустым — тогда при раскрытии раздела страница
+  // попытается загрузить файл regulation.json (лежит рядом на GitHub Pages) и
+  // взять оттуда HTML полного текста нужного пункта.
+  // Пример regulation.json:
+  // {
+  //   "4.15.2": {"html": "<h3>4.15.2. Взыскание стоимости бездоговорного</h3><p>Полный текст…</p>"},
+  //   "4.6.3": {"html": "<h3>4.6.3. Порядок проведения проверок</h3>…"}
+  // }
+  // ===========================
+
+  const SECTIONS = [
+    {
+      id: "4.1",
+      title: "Общие положения",
+      summary: "Утвердить роли/ответственность подразделений; запуск кампании проверок; применимость Регламента ко всем участникам процесса.",
+      keywords: ["общие положения","ответственность","роли","старт кампании","обязателен"],
+      fullText: ""
+    },
+    {
+      id: "4.2",
+      title: "Информационные мероприятия",
+      summary: "Постоянная профилактика хищений: публикации, стенды, видео, FAQ по ответственности; цель — ускорить заключение договоров и снизить БУ/БД.",
+      keywords: ["информационные","профилактика","листовки","СМИ","ответственность","7.19 КоАП"],
+      fullText: ""
+    },
+    {
+      id: "4.3",
+      title: "Договор параллельно с новым ТП",
+      summary: "Параллельное оформление договора с ЭСК/ГП на этапе ТП; уведомление о размещении акта ТП в ЛК; сроки пересылок — в пределах 2 РД.",
+      keywords: ["договор","ТП","личный кабинет","ЭСК","ГП","2 рабочих дня"],
+      fullText: ""
+    },
+    {
+      id: "4.4",
+      title: "Определение потребления при отсутствии договора",
+      summary: "Квалифицировать БД и случаи, когда оно не признаётся (переходные периоды, смена собственника, 2 месяца после принятия на обслуживание ГП).",
+      keywords: ["бездоговорное","квалификация","смена собственника","2 месяца","принимает ГП"],
+      fullText: ""
+    },
+    {
+      id: "4.5",
+      title: "Ограничение и контроль",
+      summary: "Ввод ограничения (предпочтительно отключение ответвления ВЛ 10/0,4 кВ), акт + фото/видео; самоподключение после ограничения = БУ/БД.",
+      keywords: ["ограничение","отключение","фото","видео","самовольное подключение"],
+      fullText: ""
+    },
+    {
+      id: "4.6",
+      title: "Планирование работы по безучётному",
+      summary: "План-график рейдов по очагам потерь; группа риска (несоответствие нагрузки, рецидивы, недопуски, под ограничением); координация с ОМСУ/ОВД/СМИ.",
+      keywords: ["план-график","рейды","очаги потерь","группа риска"],
+      fullText: ""
+    },
+    {
+      id: "4.6.1",
+      title: "Анализ текущего электропотребления",
+      summary: "Отбор объектов в рейды по профилям/балансам АСКУЭ/ИСУ; сверка с разрешённой мощностью; формирование приоритетов.",
+      keywords: ["анализ","АСКУЭ","профили","балансы","отбор объектов"],
+      fullText: ""
+    },
+    {
+      id: "4.6.2",
+      title: "Подготовка к проверке",
+      summary: "Правообладатель по ЕГРН, уведомление о проверке/вскрытии пломб с правами присутствия/фото-видео; опечатывание/упаковка ПУ при изъятии.",
+      keywords: ["уведомление","ЕГРН","вскрытие пломб","изъятие ПУ","опечатывание"],
+      fullText: ""
+    },
+    {
+      id: "4.6.3",
+      title: "Проведение проверки на месте",
+      summary: "Представиться, удостоверение, цель/основание; обязательная фото/видеофиксация (дата/время/привязка), акт; при недопуске — акт недопуска с 2 свидетелями.",
+      keywords: ["проверка","акт","недопуск","фото","видео","свидетели"],
+      fullText: ""
+    },
+    {
+      id: "4.7",
+      title: "Учёт и хранение бланков/актов",
+      summary: "Журналы выдачи/движения (пронум., прошнур., опечат.), реестр комплектов; сканы актов хранить помесячно 5 лет или до полной оплаты.",
+      keywords: ["журналы","учёт","хранение","сканы","5 лет"],
+      fullText: ""
+    },
+    {
+      id: "4.8",
+      title: "Типовые способы неучтённого",
+      summary: "Чек-лист признаков: самовольные вводы/обход ПУ/перемычки, вмешательство/магниты, повреждение счётчика, отсутствие расчётного ПУ и пр.",
+      keywords: ["безучёт","признаки","магнит","перемычка","пломбы"],
+      fullText: ""
+    },
+    {
+      id: "4.9",
+      title: "Оборот составленных актов",
+      summary: "Передача актов в УРРУ/ФЭС с расчётом и материалами в 2 РД (для БД обязательно); ведение реестров/журналов по формам.",
+      keywords: ["оборот актов","2 рабочих дня","реестры","журналы"],
+      fullText: ""
+    },
+    {
+      id: "4.10",
+      title: "Расчёт объёма безучётного (юрлица)",
+      summary: "По ПП 442 (п.187): период с последней/должной проверки до даты акта, ≤ 4380 ч, считать 24 ч/сутки; ЭСК выставляет и взыскивает.",
+      keywords: ["расчёт","юрлица","4380 часов","ПП 442"],
+      fullText: ""
+    },
+    {
+      id: "4.11",
+      title: "Расчёт безучётного (население)",
+      summary: "По показаниям за аналогичный период прошлого года с коэф. 10 (либо ближайший период); ≤ 8760 ч; оформление расчёта и решения комиссии.",
+      keywords: ["население","коэффициент 10","8760 часов","ПП 354"],
+      fullText: ""
+    },
+    {
+      id: "4.12",
+      title: "Расчёт бездоговорного",
+      summary: "За фактический период (≤ 8760 ч); при самовольных подключениях — от предыдущей контрольной проверки; мощность по паспорту/допустимым токам.",
+      keywords: ["бездоговорное","самовольное подключение","допустимые токи","сечения"],
+      fullText: ""
+    },
+    {
+      id: "4.13",
+      title: "Отсутствие/неисправность ПУ, поверка",
+      summary: "Перерасчёт по замещающей инф.: аналогичный период прошлого года (или ближайший); в ИСУ/АСКУЭ — за 3 расч. периода; коммунальные — по ПП 354.",
+      keywords: ["поверка","неисправность","замещающая информация","ИСУ","АСКУЭ"],
+      fullText: ""
+    },
+    {
+      id: "4.14",
+      title: "Комиссионное рассмотрение актов",
+      summary: "Комиссии УРРУ/ФЭС ≥ 3 чел.; протокол решений; хранение сканов вместе с актами; маршрутизация: утв./доработка/в ФЭС/в ЭСК/в СПСДФ/на списание.",
+      keywords: ["комиссия","протокол","УРРУ","ФЭС","СПСДФ"],
+      fullText: ""
+    },
+    {
+      id: "4.15.1",
+      title: "Возмещение ущерба: РСК ↔ ЭСК (безучёт)",
+      summary: "Обмен актами и расчётами в 3 РД; ЭСК ведёт претензионно-исковую по БУ; пакет: расчёт, медиа, подтверждение направления потребителю.",
+      keywords: ["возмещение","претензионная","ЭСК","3 рабочих дня","безучёт"],
+      fullText: ""
+    },
+    {
+      id: "4.15.2",
+      title: "Взыскание стоимости бездоговорного",
+      summary: "Досудебная претензия, сбор доказательств; подача в суд ≤ 3 мес.; ФССП: отправка ИЛ ≤ 10 РД (≤ 1 мес. после вступления в силу); при невзыскиваемости — пакет на списание (ФЭС ≤ 1 мес.).",
+      keywords: ["досудебная претензия","ФССП","исполнительный лист","суд","списание"],
+      fullText: ""
+    },
+    {
+      id: "4.15.3",
+      title: "Заявления в правоохранительные органы",
+      summary: "Направлять материалы при признаках состава; формы Прил. 13–15 (порог суммы/напряжения); при отказах — анализ и обжалование.",
+      keywords: ["ОВД","РТН","заявление","КУСП","обжалование"],
+      fullText: ""
+    },
+    {
+      id: "4.15.4",
+      title: "Оперативный контроль и отчётность",
+      summary: "Каждый акт в 1С:Энергетика; Сводная таблица (формы 8.1–8.2) обновляется в течение 1 РД; отчёт до 18-го числа; хранение сканов/журналов 5 лет.",
+      keywords: ["1С","сводная таблица","8.1","8.2","18 число","5 лет"],
+      fullText: ""
+    }
+  ];
+
+  const SUGGESTS = [
+    "досудебная претензия",
+    "акт недопуска",
+    "комиссия УРРУ",
+    "самовольное подключение",
+    "ограничение 0,4 кВ",
+    "ФССП исполнительный лист",
+    "коэффициент 10",
+    "4380 часов",
+  ];
+
+  // ===== утилиты
+  const $ = (sel, el=document) => el.querySelector(sel);
+  const $$ = (sel, el=document) => Array.from(el.querySelectorAll(sel));
+  const norm = s => (s||"").toString().toLowerCase().replaceAll("ё","е").trim();
+  const debounce = (fn,ms=200)=>{let t;return (...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms)}};
+
+  // ===== рендер списка
+  const listEl = $('#list');
+  const emptyEl = $('#empty');
+  const countEl = $('#count');
+  const input = $('#q');
+
+  function score(section, q){
+    if(!q) return 1;
+    const hay = norm([section.id, section.title, section.summary, (section.keywords||[]).join(' ')].join(' '));
+    const qs = norm(q).split(/\s+/).filter(Boolean);
+    let sc = 0;
+    for(const term of qs){ if(hay.includes(term)) sc += 1; }
+    // небольшое бустирование точного совпадения id
+    if(norm(section.id)===norm(q)) sc+=2;
+    return sc;
+  }
+
+  function render(q=""){
+    const scored = SECTIONS.map(s=>({s, sc: score(s,q)})).filter(x=>x.sc>0 || !q);
+    scored.sort((a,b)=> b.sc - a.sc || a.s.id.localeCompare(b.s.id, 'ru'));
+
+    listEl.innerHTML = '';
+    if(scored.length===0){ emptyEl.style.display='block'; countEl.textContent = 'Найдено: 0'; return; }
+    emptyEl.style.display='none';
+    countEl.textContent = `Найдено: ${scored.length}`;
+
+    for(const {s} of scored){
+      const card = document.createElement('article');
+      card.className = 'card';
+      card.setAttribute('data-id', s.id);
+      card.innerHTML = `
+        <div class="card-h">
+          <span class="badge" title="Номер пункта">§ ${s.id}</span>
+          <div>
+            <div class="title">${escapeHTML(s.title)}</div>
+            <div class="summary">${highlight(s.summary, q)}</div>
+            <div class="meta">Ключевые слова: ${(s.keywords||[]).slice(0,6).join(', ')}</div>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn primary" data-action="toggle">Развернуть полный текст пункта</button>
+          <button class="btn" data-action="copy-link" title="Скопировать ссылку на пункт">Скопировать ссылку</button>
+        </div>
+        <div class="card-c">
+          <details open>
+            <summary>Полный текст</summary>
+            <div class="fulltext" id="full-${s.id}"><em>Загрузка…</em></div>
+          </details>
+        </div>`;
+
+      card.addEventListener('click', async (e)=>{
+        const btn = e.target.closest('button');
+        if(!btn) return;
+        const action = btn.getAttribute('data-action');
+        if(action==='toggle'){
+          card.classList.toggle('open');
+          if(card.classList.contains('open')){
+            await ensureFullTextLoaded(s.id);
+          }
+        }
+        if(action==='copy-link'){
+          const url = new URL(location.href);
+          url.hash = s.id;
+          navigator.clipboard.writeText(url.toString()).then(()=>{
+            btn.textContent = 'Ссылка скопирована';
+            setTimeout(()=>btn.textContent='Скопировать ссылку',1500);
+          });
+        }
+      });
+
+      listEl.appendChild(card);
+    }
+
+    // авто-раскрытие по hash
+    const hash = location.hash.replace('#','');
+    if(hash){
+      const target = $(`.card[data-id="${CSS.escape(hash)}"]`);
+      if(target){
+        const btn = target.querySelector('button[data-action="toggle"]');
+        btn?.click();
+        target.scrollIntoView({behavior:'smooth', block:'start'});
+      }
+    }
+  }
+
+  // ===== подсветка поискового терма в summary
+  function highlight(text, q){
+    if(!q) return escapeHTML(text);
+    const terms = norm(q).split(/\s+/).filter(Boolean).map(t=>t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'));
+    if(!terms.length) return escapeHTML(text);
+    const re = new RegExp('('+terms.join('|')+')','gi');
+    return escapeHTML(text).replace(re, '<mark>$1</mark>');
+  }
+
+  function escapeHTML(s){
+    return (s||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+  }
+
+  // ===== загрузка regulation.json при необходимости
+  let FULL_MAP = null; // { id: {html:"…"} }
+  async function loadFullMap(){
+    if(FULL_MAP!==null) return FULL_MAP;
+    try{
+      const res = await fetch('regulation.json', {cache:'no-store'});
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const data = await res.json();
+      FULL_MAP = data || {};
+    }catch(e){
+      FULL_MAP = {}; // без файла работаем на встроенных fullText (если есть)
+    }
+    return FULL_MAP;
+  }
+
+  async function ensureFullTextLoaded(id){
+    const host = SECTIONS.find(x=>x.id===id);
+    const slot = document.getElementById(`full-${id}`);
+    if(!slot) return;
+
+    // если уже подставляли — не перезагружаем
+    if(slot.getAttribute('data-loaded')==='1') return;
+
+    // 1) встроенный fullText
+    if(host && host.fullText){
+      slot.innerHTML = host.fullText;
+      slot.setAttribute('data-loaded','1');
+      return;
+    }
+    // 2) пробуем из regulation.json
+    const map = await loadFullMap();
+    const rec = map[id];
+    if(rec && rec.html){
+      slot.innerHTML = rec.html;
+      slot.setAttribute('data-loaded','1');
+      return;
+    }
+    // 3) резервный текст
+    slot.innerHTML = `<p style="color:#9fb0cc">Полный текст для § ${id} пока не подключён. Добавьте файл <code>regulation.json</code> в корень сайта (GitHub Pages) по образцу в комментариях к коду.</p>`;
+    slot.setAttribute('data-loaded','1');
+  }
+
+  // ===== подсказки
+  const tips = $('#tips');
+  tips.innerHTML = SUGGESTS.map(t=>`<button class="tip" data-v="${t}">${t}</button>`).join('');
+  tips.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.tip'); if(!btn) return;
+    input.value = btn.getAttribute('data-v'); doSearch(); input.focus();
+  });
+
+  // ===== поиск
+  const doSearch = debounce(()=>{ render(input.value); persistQuery(); }, 150);
+  input.addEventListener('input', doSearch);
+
+  // горячая клавиша Ctrl+/
+  window.addEventListener('keydown',(e)=>{
+    if((e.ctrlKey||e.metaKey) && e.key === '/'){
+      e.preventDefault(); input.focus(); input.select();
+    }
+  });
+
+  // восстанавливаем запрос из URL
+  function readQuery(){
+    const url = new URL(location.href);
+    const q = url.searchParams.get('q') || '';
+    if(q){ input.value = q; }
+  }
+  function persistQuery(){
+    const url = new URL(location.href);
+    if(input.value){ url.searchParams.set('q', input.value); }
+    else { url.searchParams.delete('q'); }
+    history.replaceState(null,'',url);
+  }
+
+  readQuery();
+  render(input.value);
+
+  </script>
+</body>
+</html>
